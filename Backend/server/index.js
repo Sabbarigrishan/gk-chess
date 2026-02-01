@@ -3,7 +3,8 @@ import cors from 'cors';
 import { initDb } from './database.js';
 
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 10000;
+
 
 app.use(cors());
 app.use(express.json());
@@ -75,7 +76,8 @@ app.post('/api/register', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`Server running on ${PORT}`);
 });
+
+
