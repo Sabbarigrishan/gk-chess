@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 10000;
 
 app.use(cors({
   origin: [
-    "https://gk-chess.vercel.app/"
+    "https://gk-chess.vercel.app"
   ],
   methods: ["GET", "POST"],
 }));
@@ -64,7 +64,7 @@ app.post('/api/register', async (req, res) => {
           `
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
+        await transporter.sendMail(mailOptions);
             if (error) {
                 console.error('Error sending email:', error);
             } else {
