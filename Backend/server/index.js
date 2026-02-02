@@ -58,7 +58,7 @@ app.post('/api/register', async (req, res) => {
 
         // Send Email to Admin
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: process.env.SMTP_USER,
             to: 'saibalajigopi16@gmail.com',
             subject: 'New Registration - GK Chess Academy',
             html: `
