@@ -63,14 +63,25 @@ app.post('/api/register', async (req, res) => {
           `
         };
 
-        await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully");
+        try {
+    await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully");
+} catch (mailError) {
+    console.error("Email sending failed:", mailError.message);
 
-        res.json({
-            success: true,
-            message: 'Registration successful',
-            id: result.lastID
-        });
+    // STILL return success even if mail fails
+    return res.json({
+        success: true,
+        message: "Registration saved but email failed",
+        id: result.lastID
+    });
+}
+
+res.json({
+    success: true,
+    message: 'Registration successful',
+    id: result.lastID
+});
 
     } catch (error) {
         console.error('Registration error:', error);
