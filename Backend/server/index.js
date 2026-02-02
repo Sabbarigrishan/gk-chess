@@ -24,6 +24,20 @@ initDb().then((database) => {
     db = database;
 });
 
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+// Email Transporter
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
+
 // Register endpoint
 app.post('/api/register', async (req, res) => {
     try {
@@ -38,45 +52,34 @@ app.post('/api/register', async (req, res) => {
             [studentName, parentName, email, phone, level]
         );
 
-        // Send Email using Brevo API
-        try {
-            await axios.post("https://api.brevo.com/v3/smtp/email", {
-                sender: { email: "no-reply@gkchessacademy.com", name: "GK Chess Academy" },
-                to: [{ email: "saibalajigopi16@gmail.com" }],
-                subject: "New Registration - GK Chess Academy",
-                htmlContent: `
-                    <h2>New Student Registration</h2>
-                    <p><strong>Student Name:</strong> ${studentName}</p>
-                    <p><strong>Parent Name:</strong> ${parentName || 'N/A'}</p>
-                    <p><strong>Email:</strong> ${email}</p>
-                    <p><strong>Phone:</strong> ${phone}</p>
-                    <p><strong>Level:</strong> ${level}</p>
-                `
-            }, {
-                headers: {
-                    "api-key": process.env.BREVO_API_KEY,
-                    "Content-Type": "application/json"
-                }
-            });
+        // Send Email to Admin
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: 'saibalajigopi16@gmail.com',
+            subject: 'New Registration - GK Chess Academy',
+            html: `
+            <h2>New Student Registration</h2>
+            <p><strong>Student Name:</strong> ${studentName}</p>
+            <p><strong>Parent Name:</strong> ${parentName || 'N/A'}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Level:</strong> ${level}</p>
+          `
+        };
 
-            console.log("Email sent successfully via Brevo API");
-
-        } catch (mailError) {
-            console.error("Email sending failed:", mailError.response?.data || mailError.message);
-
-            return res.json({
-                success: true,
-                message: "Registration saved but email failed",
-                id: result.lastID
-            });
-        }
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+            } else {
+                console.log('Email sent:', info.response);
+            }
+        });
 
         res.json({
             success: true,
             message: 'Registration successful',
             id: result.lastID
         });
-
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -86,3 +89,5 @@ app.post('/api/register', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on ${PORT}`);
 });
+
+
