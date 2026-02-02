@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { initDb } from './database.js';
-import axios from 'axios';
+import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -24,18 +24,15 @@ initDb().then((database) => {
     db = database;
 });
 
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-// Email Transporter
+// Brevo SMTP Transporter
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  }
 });
 
 // Register endpoint
@@ -52,9 +49,8 @@ app.post('/api/register', async (req, res) => {
             [studentName, parentName, email, phone, level]
         );
 
-        // Send Email to Admin
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: process.env.SMTP_USER,
             to: 'saibalajigopi16@gmail.com',
             subject: 'New Registration - GK Chess Academy',
             html: `
@@ -67,19 +63,26 @@ app.post('/api/register', async (req, res) => {
           `
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending email:', error);
-            } else {
-                console.log('Email sent:', info.response);
-            }
-        });
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log("Email sent successfully");
 
-        res.json({
-            success: true,
-            message: 'Registration successful',
-            id: result.lastID
-        });
+            res.json({
+                success: true,
+                message: 'Registration successful',
+                id: result.lastID
+            });
+
+        } catch (mailError) {
+            console.error("Email sending failed:", mailError.message);
+
+            res.json({
+                success: true,
+                message: "Registration saved but email failed",
+                id: result.lastID
+            });
+        }
+
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -89,5 +92,6 @@ app.post('/api/register', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on ${PORT}`);
 });
+
 
 
