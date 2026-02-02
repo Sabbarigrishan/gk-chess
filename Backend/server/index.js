@@ -5,7 +5,6 @@ import { initDb } from './database.js';
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-
 app.use(cors({
   origin: [
     "https://gk-chess.vercel.app"
@@ -65,23 +64,20 @@ app.post('/api/register', async (req, res) => {
         };
 
         await transporter.sendMail(mailOptions);
-            if (error) {
-                console.error('Error sending email:', error);
-            } else {
-                console.log('Email sent:', info.response);
-            }
-        });
+        console.log("Email sent successfully");
 
         res.json({
             success: true,
             message: 'Registration successful',
             id: result.lastID
         });
+
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 app.listen(PORT, () => {
     console.log(`Server running on ${PORT}`);
 });
