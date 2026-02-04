@@ -41,35 +41,36 @@ app.post('/api/register', async (req, res) => {
     // SEND EMAIL USING BREVO API
     try {
       await axios.post(
-        "https://api.brevo.com/v3/smtp/email",
-        {
-          sender: {
-            email: "saibalajigopi16@gmail.com",   // USE VERIFIED EMAIL HERE
-            name: "GK Chess Academy"
-          },
-          to: [
-            {
-              email: email,   // Send to student who registered
-              name: studentName
-            }
-          ],
-          subject: "New Registration - GK Chess Academy",
-          htmlContent: `
-            <h2>New Student Registration</h2>
-            <p><strong>Student Name:</strong> ${studentName}</p>
-            <p><strong>Parent Name:</strong> ${parentName || 'N/A'}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Phone:</strong> ${phone}</p>
-            <p><strong>Level:</strong> ${level}</p>
-          `
-        },
-        {
-          headers: {
-            "api-key": process.env.BREVO_API_KEY,
-            "Content-Type": "application/json"
-          }
-        }
-      );
+  "https://api.brevo.com/v3/smtp/email",
+  {
+    sender: {
+      email: "no-reply@gkchess.com",
+      name: "GK Chess Academy"
+    },
+    to: [
+      {
+        email: "saibalajigopi16@gmail.com",
+        name: "Admin"
+      }
+    ],
+    subject: "New Registration - GK Chess Academy",
+    htmlContent: `
+      <h2>New Student Registration</h2>
+      <p><strong>Student Name:</strong> ${studentName}</p>
+      <p><strong>Parent Name:</strong> ${parentName || 'N/A'}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Phone:</strong> ${phone}</p>
+      <p><strong>Level:</strong> ${level}</p>
+    `
+  },
+  {
+    headers: {
+      "api-key": process.env.BREVO_API_KEY,
+      "Content-Type": "application/json"
+    }
+  }
+);
+
 
       console.log("Email sent via Brevo API");
 
