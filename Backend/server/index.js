@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { initDb } from './database.js';
-import nodemailer from 'nodemailer';
+import axios from 'axios';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -22,27 +22,47 @@ app.use(express.json());
 let db;
 initDb().then((database) => {
     db = database;
+    console.log("Database initialized");
 });
 
-// Brevo SMTP Transporter
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  }
-});
+// Function to send email using Brevo API
+async function sendBrevoEmail(studentData) {
 
-// Test SMTP connection on startup
-transporter.verify(function (error, success) {
-  if (error) {
-    console.log("SMTP connection error:", error);
-  } else {
-    console.log("SMTP server is ready to send emails");
-  }
-});
+  const BREVO_API_KEY = process.env.BREVO_API_KEY;
+
+  const emailData = {
+    sender: {
+      name: "GK Chess Academy",
+      email: "noreply@gkchessacademy.com"
+    },
+    to: [
+      {
+        email: "saibalajigopi16@gmail.com",
+        name: "Admin"
+      }
+    ],
+    subject: "New Registration - GK Chess Academy",
+    htmlContent: `
+      <h2>New Student Registration</h2>
+      <p><strong>Student Name:</strong> ${studentData.studentName}</p>
+      <p><strong>Parent Name:</strong> ${studentData.parentName || 'N/A'}</p>
+      <p><strong>Email:</strong> ${studentData.email}</p>
+      <p><strong>Phone:</strong> ${studentData.phone}</p>
+      <p><strong>Level:</strong> ${studentData.level}</p>
+    `
+  };
+
+  await axios.post(
+    "https://api.brevo.com/v3/smtp/email",
+    emailData,
+    {
+      headers: {
+        "api-key": BREVO_API_KEY,
+        "Content-Type": "application/json"
+      }
+    }
+  );
+}
 
 // Register endpoint
 app.post('/api/register', async (req, res) => {
@@ -58,23 +78,10 @@ app.post('/api/register', async (req, res) => {
       [studentName, parentName, email, phone, level]
     );
 
-    const mailOptions = {
-      from: process.env.SMTP_USER,
-      to: "saibalajigopi16@gmail.com",
-      subject: "New Registration - GK Chess Academy",
-      html: `
-        <h2>New Student Registration</h2>
-        <p><strong>Student Name:</strong> ${studentName}</p>
-        <p><strong>Parent Name:</strong> ${parentName || 'N/A'}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone}</p>
-        <p><strong>Level:</strong> ${level}</p>
-      `
-    };
-
     try {
-      await transporter.sendMail(mailOptions);
-      console.log("Email sent successfully");
+      await sendBrevoEmail({ studentName, parentName, email, phone, level });
+
+      console.log("Email sent successfully via Brevo API");
 
       res.json({
         success: true,
@@ -83,7 +90,7 @@ app.post('/api/register', async (req, res) => {
       });
 
     } catch (mailError) {
-      console.error("Email sending failed:", mailError.message);
+      console.error("Email sending failed:", mailError.response?.data || mailError.message);
 
       res.json({
         success: true,
@@ -101,6 +108,7 @@ app.post('/api/register', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });
+
 
 
 
