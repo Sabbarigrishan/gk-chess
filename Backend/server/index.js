@@ -44,13 +44,13 @@ app.post('/api/register', async (req, res) => {
         "https://api.brevo.com/v3/smtp/email",
         {
           sender: {
-            email: "no-reply@gkchess.com",
+            email: "saibalajigopi16@gmail.com",   // USE VERIFIED EMAIL HERE
             name: "GK Chess Academy"
           },
           to: [
             {
-              email: "saibalajigopi16@gmail.com",
-              name: "Admin"
+              email: email,   // Send to student who registered
+              name: studentName
             }
           ],
           subject: "New Registration - GK Chess Academy",
@@ -80,7 +80,7 @@ app.post('/api/register', async (req, res) => {
       });
 
     } catch (emailError) {
-      console.error("Brevo API email failed:", emailError.message);
+      console.error("Brevo API email failed:", emailError.response?.data || emailError.message);
 
       res.json({
         success: true,
@@ -98,6 +98,7 @@ app.post('/api/register', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });
+
 
 
 
