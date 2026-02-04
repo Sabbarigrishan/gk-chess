@@ -40,19 +40,21 @@ app.post('/api/register', async (req, res) => {
 
     // SEND EMAIL USING BREVO API
     try {
-      await axios.post(
+     await axios.post(
   "https://api.brevo.com/v3/smtp/email",
   {
     sender: {
-      email: "no-reply@gkchess.com",
+      email: "saibalajigopi16@gmail.com",
       name: "GK Chess Academy"
     },
+
     to: [
       {
         email: "saibalajigopi16@gmail.com",
         name: "Admin"
       }
     ],
+
     subject: "New Registration - GK Chess Academy",
     htmlContent: `
       <h2>New Student Registration</h2>
@@ -70,6 +72,7 @@ app.post('/api/register', async (req, res) => {
     }
   }
 );
+
 
 
       console.log("Email sent via Brevo API");
