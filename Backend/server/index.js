@@ -51,8 +51,13 @@ app.post('/api/register', async (req, res) => {
     to: [
       {
         email: "saibalajigopi16@gmail.com",
-        name: "Admin"
+        name: "Admin 1"
+      },
+      {
+        email: "sundaramgopikrishnan@gmail.com",
+        name: "Admin 2"
       }
+      
     ],
 
     subject: "New Registration - GK Chess Academy",
