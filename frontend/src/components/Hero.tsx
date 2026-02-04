@@ -34,11 +34,7 @@ const Hero = () => {
                         <Button size="lg" className="shadow-lg shadow-chess-accent/20" onClick={() => document.dispatchEvent(new CustomEvent('openRegistration'))}>
                             Start Free Trial
                         </Button>
-                        <a href="#classes">
-                            <Button variant="outline" size="lg" className="backdrop-blur-sm">
-                                View Classes
-                            </Button>
-                        </a>
+
                     </div>
                 </motion.div>
             </div>
