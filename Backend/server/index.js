@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 10000;
 
 app.use(cors({
   origin: [
-    "https://gk-chess.vercel.app"
+    process.env.FRONTEND_URL
   ],
   methods: ["GET", "POST"],
 }));
@@ -22,47 +22,7 @@ app.use(express.json());
 let db;
 initDb().then((database) => {
     db = database;
-    console.log("Database initialized");
 });
-
-// Function to send email using Brevo API
-async function sendBrevoEmail(studentData) {
-
-  const BREVO_API_KEY = process.env.BREVO_API_KEY;
-
-  const emailData = {
-    sender: {
-      name: "GK Chess Academy",
-      email: "noreply@gkchessacademy.com"
-    },
-    to: [
-      {
-        email: "saibalajigopi16@gmail.com",
-        name: "Admin"
-      }
-    ],
-    subject: "New Registration - GK Chess Academy",
-    htmlContent: `
-      <h2>New Student Registration</h2>
-      <p><strong>Student Name:</strong> ${studentData.studentName}</p>
-      <p><strong>Parent Name:</strong> ${studentData.parentName || 'N/A'}</p>
-      <p><strong>Email:</strong> ${studentData.email}</p>
-      <p><strong>Phone:</strong> ${studentData.phone}</p>
-      <p><strong>Level:</strong> ${studentData.level}</p>
-    `
-  };
-
-  await axios.post(
-    "https://api.brevo.com/v3/smtp/email",
-    emailData,
-    {
-      headers: {
-        "api-key": BREVO_API_KEY,
-        "Content-Type": "application/json"
-      }
-    }
-  );
-}
 
 // Register endpoint
 app.post('/api/register', async (req, res) => {
@@ -78,10 +38,40 @@ app.post('/api/register', async (req, res) => {
       [studentName, parentName, email, phone, level]
     );
 
+    // SEND EMAIL USING BREVO API
     try {
-      await sendBrevoEmail({ studentName, parentName, email, phone, level });
+      await axios.post(
+        "https://api.brevo.com/v3/smtp/email",
+        {
+          sender: {
+            email: "no-reply@gkchess.com",
+            name: "GK Chess Academy"
+          },
+          to: [
+            {
+              email: "saibalajigopi16@gmail.com",
+              name: "Admin"
+            }
+          ],
+          subject: "New Registration - GK Chess Academy",
+          htmlContent: `
+            <h2>New Student Registration</h2>
+            <p><strong>Student Name:</strong> ${studentName}</p>
+            <p><strong>Parent Name:</strong> ${parentName || 'N/A'}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Level:</strong> ${level}</p>
+          `
+        },
+        {
+          headers: {
+            "api-key": process.env.BREVO_API_KEY,
+            "Content-Type": "application/json"
+          }
+        }
+      );
 
-      console.log("Email sent successfully via Brevo API");
+      console.log("Email sent via Brevo API");
 
       res.json({
         success: true,
@@ -89,8 +79,8 @@ app.post('/api/register', async (req, res) => {
         id: result.lastID
       });
 
-    } catch (mailError) {
-      console.error("Email sending failed:", mailError.response?.data || mailError.message);
+    } catch (emailError) {
+      console.error("Brevo API email failed:", emailError.message);
 
       res.json({
         success: true,
