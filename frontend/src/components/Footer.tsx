@@ -1,4 +1,4 @@
-import { Instagram, Mail, Phone, Youtube } from 'lucide-react';
+import { Mail, Phone } from 'lucide-react';
 import logo from '../assets/logo-v2.png';
 
 const Footer = () => {
@@ -14,15 +14,7 @@ const Footer = () => {
                         <p className="text-slate-400 max-w-sm mb-6">
                             Empowering the next generation of chess masters through world-class coaching and community.
                         </p>
-                        <div className="flex gap-4">
-                            <a href="https://www.instagram.com/gkchessacademy?igsh=MThpc3lvNTU4NjAwZw==" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-chess-accent transition-colors"><Instagram className="w-5 h-5" /></a>
-                            <a href="https://www.youtube.com/channel/UClr1u4kyJRxSiUp8avnmgoQ" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-chess-accent transition-colors"><Youtube className="w-5 h-5" /></a>
-                            <a href="https://share.google/ba3vsggVy6MqFdJs3" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-chess-accent transition-colors">
-                                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 0.507 5.387 0 12s5.36 12 12 12c3.627 0 6.373-1.2 8.52-3.253 2.187-2.187 2.973-5.493 2.973-8.28 0-.813-.093-1.6-.24-2.387h-11.773z" />
-                                </svg>
-                            </a>
-                        </div>
+
                     </div>
 
                     <div>
@@ -30,7 +22,7 @@ const Footer = () => {
                         <ul className="space-y-3">
                             <li><a href="#" className="text-slate-400 hover:text-chess-accent transition-colors">Home</a></li>
                             <li><a href="#about" className="text-slate-400 hover:text-chess-accent transition-colors">About Us</a></li>
-                            <li><a href="#classes" className="text-slate-400 hover:text-chess-accent transition-colors">Our Classes</a></li>
+
                             <li><a href="#testimonials" className="text-slate-400 hover:text-chess-accent transition-colors">Reviews</a></li>
                         </ul>
                     </div>
